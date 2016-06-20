@@ -1,0 +1,67 @@
+from scrapy.selector import HtmlXPathSelector
+from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
+from scrapy.contrib.spiders import CrawlSpider, Rule
+from baiduMarket.items import BaidumarketItem
+
+class BaiduSpider(CrawlSpider):
+    name = 'baidu'
+    allowed_domains = ['as.baidu.com']
+
+    start_urls = [
+        'http://as.baidu.com/a/asgame',
+        'http://as.baidu.com/a/software',
+    ]     
+         
+    rules = (
+        Rule(SgmlLinkExtractor(allow=['/a/item\?docid=\d+']), callback = 'parse_item', follow = False),
+        Rule(SgmlLinkExtractor(allow=['/a/asgame\?cid=\d+\&s=\d+[\&pn=\d+]*']), callback = 'noapk', follow = True),
+        Rule(SgmlLinkExtractor(allow=['/a/software\?cid=\d+\&s=\d+[\&pn=\d+]*']), callback = 'noapk', follow = True),
+        Rule(SgmlLinkExtractor(allow=['/a/topic\?t=\d+\&f=[a-z]*_\d+_d+']), callback = 'noapk', follow = True),
+    ) 
+
+    def noapk(self, response):
+        print 'no apk: ', response.url
+        return
+
+    def parse_item(self, response):
+
+        print '> there is a new apk: ',response.url
+
+        hxs = HtmlXPathSelector(response)
+        i = BaidumarketItem()
+
+        i['app_market'] = 'Baidu_Market'
+        
+        i['market_site'] = 'as.baidu.com'
+
+        i['app_name'] = "".join(hxs.select('//div[@class="com"]/div[@class="info-top"]/dl/dd/h1/span[@id="appname"]/text()').extract())
+
+        i['app_keywords'] = "".join(hxs.select('//meta[@name="keywords"]/@content').extract())
+
+        i['app_url'] = response.url
+
+        i['app_icon_url'] = "".join(hxs.select('//div[@class="com"]/div[@class="info-top"]/dl/dt/img/@src').extract())
+
+        i['app_size']  = "".join(hxs.select('//div[@class="com"]/div[@class="info-top"]/dl/dd[@class="info-params"]/table/tbody/tr/td/span[@class="params-size"]/text()').extract())
+
+        i['app_version'] = "".join(hxs.select('//div[@class="com"]/div[@class="info-top"]/dl/dd[@class="info-params"]/table/tbody/tr/td/span[@class="params-vname"]/text()').extract())
+
+        i['download_times'] = "".join(hxs.select('//div[@class="com"]/div[@class="info-top"]/dl/dd[@class="info-params"]/table/tbody/tr/td/span[@class="params-download-num"]/text()').extract())
+
+        i['download_url'] = "".join(hxs.select('//div[@class="com"]/div[@class="info-middle"]/table/tbody/tr/td[@class="col-content"]/a[@id="down_as_durl"]/@href').extract())
+
+        i['app_author'] = "".join(hxs.select('//div[@class="com"]/div[@class="info-top"]/dl/dd[@class="info-params"]/table/tbody/tr/td[@class="origin-row"]/div[@class="origin-wrap"]/a/text()').extract())
+
+        i['os_version'] = "".join(hxs.select('//div[@class="com"]/div[@class="info-top"]/dl/dd[@class="info-params"]/table/tbody/tr/td/span[@class="params-platform"]/text()').extract())
+
+        i['app_description'] = "".join(hxs.select('//div[@class="data-tabcon brief-con"]/div[@class="info-brief"]/div[@class="brief-des"]/text()').extract())
+
+        i['last_update_date'] = "".join(hxs.select('//div[@class="com"]/div[@class="info-top"]/dl/dd[@class="info-params"]/table/tbody/tr/td/span[@class="params-updatetime"]/text()').extract())
+
+        i['app_class'] = "".join(hxs.select('//div[@class="content-main-border content-intro"]/div[@class="data-tabcon params-con"]/table/tbody/tr/td/span[@class="params-catename"]/text()').extract())
+
+        i['user_rate'] = str(int(round(float("".join(hxs.select('//div[@class="com"]/div[@class="info-top"]/dl/dd[@class="info-star ptb7"]/b[@id="score-num"]/text()').extract())[0:-1])*2)))
+
+        i['comments_num'] = "0"
+
+        return i

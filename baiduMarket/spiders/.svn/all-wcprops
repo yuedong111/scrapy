@@ -1,0 +1,71 @@
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/VARAS/!svn/ver/2065/Sir/app_market_crawl/baiduMarket/spiders
+END
+baidu.py
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/VARAS/!svn/ver/1109/Sir/app_market_crawl/baiduMarket/spiders/baidu.py
+END
+world3533.py
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/VARAS/!svn/ver/2065/Sir/app_market_crawl/baiduMarket/spiders/world3533.py
+END
+xiaomi.py
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/VARAS/!svn/ver/2065/Sir/app_market_crawl/baiduMarket/spiders/xiaomi.py
+END
+mobile1.py
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/VARAS/!svn/ver/2065/Sir/app_market_crawl/baiduMarket/spiders/mobile1.py
+END
+hiapk.py
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/VARAS/!svn/ver/1109/Sir/app_market_crawl/baiduMarket/spiders/hiapk.py
+END
+sogou.py
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/VARAS/!svn/ver/2065/Sir/app_market_crawl/baiduMarket/spiders/sogou.py
+END
+yy138.py
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/VARAS/!svn/ver/2065/Sir/app_market_crawl/baiduMarket/spiders/yy138.py
+END
+wangyi.py
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/VARAS/!svn/ver/2065/Sir/app_market_crawl/baiduMarket/spiders/wangyi.py
+END
+__init__.py
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/VARAS/!svn/ver/1109/Sir/app_market_crawl/baiduMarket/spiders/__init__.py
+END
+huawei.py
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/VARAS/!svn/ver/2065/Sir/app_market_crawl/baiduMarket/spiders/huawei.py
+END
+lenovo.py
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/VARAS/!svn/ver/2065/Sir/app_market_crawl/baiduMarket/spiders/lenovo.py
+END

@@ -1,0 +1,71 @@
+# -*- coding: UTF-8 -*-
+from scrapy.selector import HtmlXPathSelector
+from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
+from scrapy.contrib.spiders import CrawlSpider, Rule
+from baiduMarket.items import BaidumarketItem
+
+class LenovoSpider(CrawlSpider):
+    name = 'lenovo'
+    allowed_domains = ['lenovomm.com']
+    start_urls = [
+        'http://www.lenovomm.com/index_app.html',
+        'http://www.lenovomm.com/index_game.html',
+    ]
+
+    rules = (
+        Rule(SgmlLinkExtractor(allow=['/appdetail/com.[a-zA-Z\.]*/\d+']), callback='parse_item', follow=True),
+        Rule(SgmlLinkExtractor(allow=['/category/class/\d+_\d+_\d+_flat_\d+.html']), callback='noapk', follow=True),
+        
+    )
+
+    def noapk(self, response):
+        print 'No apk: ',response.url
+
+    def parse_item(self, response):
+        
+        print 'There is a new apk: ', response.url
+
+        hxs = HtmlXPathSelector(response)
+        i = BaidumarketItem()
+ 
+        i['app_name'] = "".join(hxs.select('//div[@class="detailTopL clearfix"]/div[1]/div[2]/div[1]/h1/text()').extract())
+
+
+        i['app_keywords'] = "".join(hxs.select('//meta[@name="keywords"]/@content').extract())  
+ 
+        i['app_url'] = response.url
+        
+        i['app_icon_url'] = "".join(hxs.select('//div[@class="detailMajor clearfix pr"]/div[1]/img/@src').extract())
+
+#       i['icon_content'] = "".join(hxs.select().extract())
+
+        i['app_size'] = "".join(hxs.select('//div[@class="fl"]/ul/li[1]/span/text()').extract())
+
+        i['app_version'] = "".join(hxs.select('//div[@class="fl"]/ul/li[2]/span/text()').extract())
+
+        i['download_times'] = "".join(hxs.select('//div[@class="f12 detailDownNum cb clearfix"]/span/text()').extract())[3:-3]
+
+        i['download_url'] = "".join(hxs.select('//ul[@class="detailTop2 fgrey5"]/li[2]/a[1]/@href').extract())
+
+        i['app_author'] = "".join(hxs.select('//ul[@class="detailAppInfo fl"]/li[4]/span/text()').extract())
+
+        i['os_version'] = "".join(hxs.select('//ul[@class="detailAppInfo fl"]/li[3]/span/text()').extract())
+
+        i['app_description'] = "".join(hxs.select('//div[@class="appIntro bordertop cb oh"]/div[1]/text()').extract()) 
+
+        i['last_update_date'] = "".join(hxs.select('//ul[@class="detailAppInfo fl"]/li[5]/span/text()').extract())
+
+        i['app_class'] = "".join(hxs.select('//div[@class="crumbNavBox repeatXbg"]/div[1]/a[3]/text()').extract())
+
+        i['app_market'] = u'乐商店'
+
+        i['market_site'] = 'lenovomm.com'
+                
+        tmp = "".join(hxs.select('//div[@class="f12 detailDownNum cb clearfix"]/p/@score').extract())        
+        i['user_rate'] = str(int(round(float(tmp)*2)))
+
+        i['comments_num'] = '0'
+        print i
+        return i
+
+

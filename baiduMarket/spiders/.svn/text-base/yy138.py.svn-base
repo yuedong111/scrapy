@@ -1,0 +1,95 @@
+# -*- coding:UTF-8 -*-
+from scrapy.selector import HtmlXPathSelector
+from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
+from scrapy.contrib.spiders import CrawlSpider, Rule
+from baiduMarket.items import BaidumarketItem
+
+class Yy138Spider(CrawlSpider):
+    name = 'yy138'
+    
+    allowed_domains = ['www.yy138.com']
+    
+    start_urls = [
+      'http://www.yy138.com/android/youxi/',
+      'http://www.yy138.com/android/ruanjian/',
+      'http://www.yy138.com/wangyou/',
+    ]
+
+    rules = (
+        Rule(SgmlLinkExtractor(allow = ['/[a-zA-Z][a-zA-Z0-9]*/']), callback = 'parse_item', follow = False),
+        
+        Rule(SgmlLinkExtractor(allow = ['/wangyou/']), callback = 'noapk', follow = True),
+        Rule(SgmlLinkExtractor(allow = ['/\d+/(\d+\.htm)*']), callback = 'noapk', follow = True), 
+        Rule(SgmlLinkExtractor(allow = ['/wangyou/zuixin/(\d+\.htm)*']), callback = 'noapk', follow = True),
+        
+        Rule(SgmlLinkExtractor(allow = ['/youxi/']), callback = 'noapk', follow = True), 
+        Rule(SgmlLinkExtractor(allow = ['/android/youxi/']), callback = 'noapk', follow = True),
+        Rule(SgmlLinkExtractor(allow = ['/youxi/zuixin/(\d+\.htm)*']), callback = 'noapk', follow = True),
+
+        Rule(SgmlLinkExtractor(allow = ['/ruanjian/']), callback = 'noapk', follow = True),
+        Rule(SgmlLinkExtractor(allow = ['/android/ruanjian/']), callback = 'noapk', follow = True),
+        Rule(SgmlLinkExtractor(allow = ['/ruanjian/zuixin/(\d+\.htm)*']), callback = 'noapk', follow = True),
+    )
+
+    def noapk(self, response):
+        print 'No apk: ', response.url    
+   
+    def parse_item(self, response):
+
+        print 'There is a new apk: ',response.url
+        
+        hxs = HtmlXPathSelector(response)
+        i = BaidumarketItem()
+
+        try:
+
+            i['app_name'] = ''.join(hxs.select('//div[@class="column download"]/div[1]/h1[1]/text()').extract())
+
+            i['app_keywords'] = 'chenyi say None'
+ 
+            i['app_url'] = response.url
+
+            i['app_icon_url'] = ''.join(hxs.select('//div[@class="icon"]/img/@src').extract())
+
+#i['icon_content'] =  
+        
+            i['app_size'] = ''.join(hxs.select('//span[@class="size"]/text()').extract())
+ 
+            i['app_version'] = ''.join(hxs.select('//div[@class="system"]/span[1]/text()').extract())[3:]
+
+            i['download_times'] = '0'
+
+            i['download_url'] = ''.join(hxs.select('//div[@class="column download2"]/div[1]/div[2]/div[1]/div[2]/a[1]/@href').extract())
+
+            if (i['download_url'].find('.apk') == -1):
+                assert 1 == 2, 'this url is not for Android platform'
+
+            i['app_author'] =  'chenyi say None'
+
+            i['os_version'] = ''.join(hxs.select('//div[@class="system"]/text()').extract())[3:]
+
+            i['app_description'] = ''.join(hxs.select('//div[@class="column introduction"]/div[2]/p/text()').extract())
+
+            if i['app_description'] == '':
+                i['app_description'] = ''.join(hxs.select('//div[@class="column introduction"]/div[2]/text()').extract())
+
+            i['last_update_date'] =  '1990-01-01'
+
+            i['app_class'] = ''.join(hxs.select('//div[@class="intro"]/p[3]/a[2]/text()').extract())
+
+            if  i['app_class'] == '':
+                i['app_class'] = ''.join(hxs.select('//div[@class="intro"]/p[2]/a[2]/text()').extract())
+
+            i['app_market'] = u'yy138.com'
+
+            i['market_site'] = 'www.yy138.com'
+
+            i['user_rate'] = ''.join(hxs.select('//span[@class="star"]/span/@class').extract())[-1]
+ 
+            i['comments_num'] = '0'
+
+            return i
+      
+        except Exception, e:
+
+            print e

@@ -1,0 +1,53 @@
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/VARAS/!svn/ver/2067/Sir/app_market_crawl/baiduMarket
+END
+pipelines.py
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/VARAS/!svn/ver/2063/Sir/app_market_crawl/baiduMarket/pipelines.py
+END
+scrapy.cfg
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/VARAS/!svn/ver/1023/Sir/app_market_crawl/baiduMarket/scrapy.cfg
+END
+tool.py
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/VARAS/!svn/ver/2067/Sir/app_market_crawl/baiduMarket/tool.py
+END
+__init__.py
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/VARAS/!svn/ver/1109/Sir/app_market_crawl/baiduMarket/__init__.py
+END
+test.py
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/VARAS/!svn/ver/1109/Sir/app_market_crawl/baiduMarket/test.py
+END
+com_fm.py
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/VARAS/!svn/ver/1109/Sir/app_market_crawl/baiduMarket/com_fm.py
+END
+settings.py
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/VARAS/!svn/ver/1109/Sir/app_market_crawl/baiduMarket/settings.py
+END
+items.py
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/VARAS/!svn/ver/1109/Sir/app_market_crawl/baiduMarket/items.py
+END

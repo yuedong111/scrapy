@@ -1,0 +1,49 @@
+#-*- coding: UTF-8 -*-
+from scrapy.selector import HtmlXPathSelector
+from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
+from scrapy.contrib.spiders import CrawlSpider, Rule
+from baiduMarket.items import BaidumarketItem
+
+class HuaweiSpider(CrawlSpider):
+    name = 'huawei'
+    allowed_domains = ['app.vmall.com']
+    start_urls = ['http://app.vmall.com/soft/list',
+                  'http://app.vmall.com/game/list',
+                 ]
+
+    rules = (
+        Rule(SgmlLinkExtractor(allow=['app/C\d+[?a-z=&]*']), callback='parse_item', follow=True),
+        Rule(SgmlLinkExtractor(allow=['soft/list[\d+_]*']), callback='noapk', follow=True),
+        Rule(SgmlLinkExtractor(allow=['game/list[\d+_]*']), callback='noapk', follow=True),
+    )
+   
+    def noapk(self,response):
+        print "> No apk url:",response.url
+
+    def parse_item(self, response):
+        print "There is a new apk:",response.url
+        hxs = HtmlXPathSelector(response)
+        i = BaidumarketItem()
+        i["app_name"] = hxs.select('//div[@class="app-info flt"]/ul[1]/li[2]/p[1]/span[1]/text()').extract()[0]
+        i["app_keywords"] = "".join(hxs.select('//meta[@name="keywords"]/@content').extract())
+        i['app_url'] = response.url
+        i['app_icon_url'] = "".join(hxs.select('//div[@class="app-info flt"]/ul[@class="app-info-ul nofloat"]/li[@class="img"]/img/@src').extract())
+        i['app_size'] = hxs.select('//li[@class="ul-li-detail"]/span/text()').extract()[0]
+        i['app_version'] = hxs.select('//li[@class="ul-li-detail"]/span/text()').extract()[3]
+        i['download_times'] = hxs.select('//div[@class="app-info flt"]/ul[@class="app-info-ul nofloat"]/li/p/span/text()').extract()[1][3:]
+        i['download_url'] = "".join(hxs.select('//a[@class="mkapp-btn mab-install"]/@dlurl').extract())
+        print '> special download_url: ', i['download_url']
+        i['app_author'] = hxs.select('//li[@class="ul-li-detail"]/span/text()').extract()[2]
+        i['os_version'] = "".join(hxs.select('//div[@id="firmware_items"]/span/text()').extract())
+        i['app_description'] = "".join(hxs.select('//div[@id="app_strdesc"]/text()').extract()) 
+        i['last_update_date'] = hxs.select('//li[@class="ul-li-detail"]/span/text()').extract()[1]
+        i['app_class'] = hxs.select('//div[@class="unit-locate"]/a/text()').extract()[-1]
+        i['app_market'] = u"\u534e\u4e3a\u5e94\u7528\u5e02\u573a"
+        i['market_site'] = 'app.vmall.com'
+        i['user_rate'] = hxs.select('//div[@class="app-info flt"]/ul[@class="app-info-ul nofloat"]/li/p/span/@class').extract()[2][-1]
+        try:
+            comments = "".join(hxs.select('//h4[@class="sub nofloat"]/span/text()').extract())
+            i['comments_num'] = comments.split(u"\u8bc4\u8bba")[1].split(u"\uff08")[1].split(u"\u6761")[0]
+        except:
+            i['comments_num'] = "0"
+        return i
